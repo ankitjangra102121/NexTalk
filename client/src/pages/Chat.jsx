@@ -111,8 +111,6 @@ function Chat() {
     }
 
     socket.emit("send-message", {
-      senderId: user.id,
-
       conversationId: selectedConversation.id,
 
       content: message,

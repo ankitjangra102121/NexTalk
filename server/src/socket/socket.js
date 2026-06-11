@@ -1,9 +1,30 @@
 const prisma = require('../config/db');
+
+const jwt = require('jsonwebtoken');
+
 const chatService = require('../services/chat.service');
 
 const connectedUsers = new Map();
 
 const initializeSocket = (io) => {
+  io.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token;
+
+      if (!token) {
+        return next(new Error('Unauthorized'));
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      socket.userId = decoded.id;
+
+      next();
+    } catch (error) {
+      next(new Error('Unauthorized'));
+    }
+  });
+
   io.on('connection', (socket) => {
     console.log(
       `⚡ User connected:
@@ -70,13 +91,31 @@ const initializeSocket = (io) => {
     });
 
     // Join Chat Room
-    socket.on('join-conversation', (conversationId) => {
-      socket.join(conversationId);
+    socket.on('join-conversation', async (conversationId) => {
+      try {
+        const member = await prisma.conversationMember.findFirst({
+          where: {
+            userId: socket.userId,
 
-      console.log(
-        `Joined room:
-            ${conversationId}`,
-      );
+            conversationId,
+          },
+        });
+
+        if (!member) {
+          return socket.emit('join-error', 'Unauthorized conversation');
+        }
+
+        socket.join(conversationId);
+
+        console.log(
+          `✅ User ${socket.userId} joined:
+        ${conversationId}`,
+        );
+      } catch (error) {
+        console.log(error);
+
+        socket.emit('join-error', error.message);
+      }
     });
 
     // socket.on('send-message', async (data) => {
@@ -135,10 +174,23 @@ const initializeSocket = (io) => {
     //     socket.emit('message-error', error.message);
     //   }
     // });
-    
     socket.on('send-message', async (data) => {
       try {
-        const { senderId, conversationId, content, type } = data;
+        const { conversationId, content, type } = data;
+
+        const senderId = socket.userId;
+
+        const member = await prisma.conversationMember.findFirst({
+          where: {
+            userId: senderId,
+
+            conversationId,
+          },
+        });
+
+        if (!member) {
+          return socket.emit('message-error', 'Unauthorized conversation');
+        }
 
         const message = await prisma.message.create({
           data: {
