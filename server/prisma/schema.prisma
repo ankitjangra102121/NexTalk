@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ConversationType {
+  PRIVATE
+  GROUP
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  FILE
+  AUDIO
+}
+
+model User {
+  id         String  @id @default(uuid())
+  fullName   String
+  email      String  @unique
+  password   String
+  profilePic String?
+  bio        String?
+  role       String  @default("user")
+  isVerified Boolean @default(false)
+
+  refreshTokens RefreshToken[]
+
+  sentMessages Message[]
+
+  conversations ConversationMember[]
+
+  notifications Notification[]
+
+  presence UserPresence?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  messageReads MessageRead[]
+}
+
+model RefreshToken {
+  id     String @id @default(uuid())
+  token  String @unique
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  name String?
+
+  type ConversationType
+
+  groupImage String?
+
+  members ConversationMember[]
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ConversationMember {
+  id String @id @default(uuid())
+
+  userId         String
+  conversationId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  joinedAt   DateTime @default(now())
+  isPinned   Boolean  @default(false)
+  isArchived Boolean  @default(false)
+
+  @@unique([userId, conversationId])
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  senderId       String
+  conversationId String
+
+  content String?
+
+  status String @default("sent")
+
+  isDeleted Boolean @default(false)
+
+  type MessageType @default(TEXT)
+
+  sender User @relation(fields: [senderId], references: [id])
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  attachments Attachment[]
+
+  readBy MessageRead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Attachment {
+  id String @id @default(uuid())
+
+  messageId String
+
+  fileUrl  String
+  fileType String
+  fileSize Int?
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model MessageRead {
+  id String @id @default(uuid())
+
+  messageId String
+  userId    String
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  readAt DateTime @default(now())
+
+  @@unique([messageId, userId])
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+
+  title   String
+  message String
+
+  isRead Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model UserPresence {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  isOnline Boolean @default(false)
+
+  socketId String?
+
+  lastSeen DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt
+}
