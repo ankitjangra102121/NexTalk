@@ -30,7 +30,6 @@ const initializeSocket = (io) => {
       console.log('Socket connected');
     }
 
-    // Register User
     socket.on('register-user', async () => {
       const userId = socket.userId;
 
@@ -93,7 +92,10 @@ const initializeSocket = (io) => {
       });
     });
 
-    // Join Chat Room
+    socket.on('leave-conversation', (conversationId) => {
+      socket.leave(conversationId);
+    });
+
     socket.on('join-conversation', async (conversationId) => {
       try {
         const member = await prisma.conversationMember.findFirst({
@@ -120,62 +122,6 @@ const initializeSocket = (io) => {
       }
     });
 
-    // socket.on('send-message', async (data) => {
-    //   try {
-    //     const { senderId, conversationId, content, type } = data;
-
-    //     const message = {
-    //       senderId,
-    //       conversationId,
-    //       content,
-    //       type,
-    //     };
-
-    //     console.log('Real-time message:', message);
-
-    //     // Send message to room
-    //     io.to(conversationId).emit('receive-message', message);
-
-    //     // Real-time notification
-    //     const members = await prisma.conversationMember.findMany({
-    //       where: {
-    //         conversationId,
-
-    //         userId: {
-    //           not: senderId,
-    //         },
-    //       },
-    //     });
-
-    //     for (const member of members) {
-    //       const socketId = connectedUsers.get(member.userId);
-
-    //       if (socketId) {
-    //         io.to(socketId).emit('new-notification', {
-    //           title: 'New Message',
-
-    //           message: content,
-
-    //           conversationId,
-
-    //           senderId,
-    //         });
-
-    //         const count = await prisma.notification.count({
-    //           where: {
-    //             userId: member.userId,
-
-    //             isRead: false,
-    //           },
-    //         });
-
-    //         io.to(socketId).emit('notification-count', count);
-    //       }
-    //     }
-    //   } catch (error) {
-    //     socket.emit('message-error', error.message);
-    //   }
-    // });
     socket.on('send-message', async (data) => {
       try {
         const { conversationId, content, type } = data;
@@ -194,18 +140,28 @@ const initializeSocket = (io) => {
           return socket.emit('message-error', 'Unauthorized conversation');
         }
 
+        const { safeContent, safeType } = chatService.validateMessageInput(
+          conversationId,
+          content,
+          type,
+        );
+
         const message = await prisma.message.create({
           data: {
             senderId,
+
             conversationId,
-            content,
-            type,
+
+            content: safeContent,
+
+            type: safeType,
           },
 
           include: {
             sender: {
               select: {
                 id: true,
+
                 fullName: true,
               },
             },
@@ -214,8 +170,6 @@ const initializeSocket = (io) => {
 
         io.to(conversationId).emit('receive-message', message);
       } catch (error) {
-        console.log(error);
-
         socket.emit('message-error', error.message);
       }
     });

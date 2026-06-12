@@ -1,11 +1,30 @@
 import { io } from "socket.io-client";
 
-const token = localStorage.getItem("token");
-
 export const socket = io(
   import.meta.env.VITE_SOCKET_URL || "http://localhost:5000",
   {
     autoConnect: false,
-    auth: { token },
+
+    auth: {},
   },
 );
+
+export const connectSocket = () => {
+  const token = localStorage.getItem("token");
+
+  socket.auth = {
+    token,
+  };
+
+  if (!socket.connected) {
+    socket.connect();
+  }
+
+  socket.emit("register-user");
+};
+
+export const disconnectSocket = () => {
+  if (socket.connected) {
+    socket.disconnect();
+  }
+};

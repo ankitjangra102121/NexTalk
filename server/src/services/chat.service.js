@@ -1,5 +1,26 @@
 const prisma = require('../config/db');
 
+const MESSAGE_TYPES = ['TEXT', 'IMAGE', 'VIDEO', 'FILE', 'AUDIO'];
+const MAX_MESSAGE_LENGTH = 2000;
+
+const validateMessageInput = (conversationId, content, type) => {
+  if (!conversationId || typeof conversationId !== 'string') {
+    throw new Error('Invalid conversationId');
+  }
+  const safeType = (type || 'TEXT').trim().toUpperCase();
+  if (!MESSAGE_TYPES.includes(safeType)) {
+    throw new Error('Invalid message type');
+  }
+  const safeContent = typeof content === 'string' ? content.trim() : '';
+  if (safeType === 'TEXT' && !safeContent) {
+    throw new Error('Message cannot be empty');
+  }
+  if (safeContent.length > MAX_MESSAGE_LENGTH) {
+    throw new Error(`Message exceeds ${MAX_MESSAGE_LENGTH} characters`);
+  }
+  return { safeContent, safeType };
+};
+
 const createConversation = async (userId, memberIds, type, name = null) => {
   if (!Array.isArray(memberIds) || memberIds.length === 0) {
     throw new Error('Invalid members');
@@ -144,6 +165,12 @@ const sendMessage = async (
   content,
   type = 'TEXT',
 ) => {
+  const { safeContent, safeType } = validateMessageInput(
+    conversationId,
+    content,
+    type,
+  );
+
   const member = await prisma.conversationMember.findFirst({
     where: {
       userId: senderId,
@@ -159,15 +186,19 @@ const sendMessage = async (
   return prisma.message.create({
     data: {
       senderId,
+
       conversationId,
-      content,
-      type,
+
+      content: safeContent,
+
+      type: safeType,
     },
 
     include: {
       sender: {
         select: {
           id: true,
+
           fullName: true,
         },
       },
@@ -450,4 +481,5 @@ module.exports = {
   updatePresence,
   getNotifications,
   markNotificationRead,
+  validateMessageInput,
 };

@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 
 import api from "../services/api";
 
+import { connectSocket } from "../socket/socket";
+
 function Register() {
   const navigate = useNavigate();
 
@@ -27,6 +29,9 @@ function Register() {
       const { data } = await api.post("/auth/register", formData);
 
       localStorage.setItem("token", data.accessToken);
+
+      connectSocket();
+
       localStorage.setItem("user", JSON.stringify(data.user));
 
       toast.success("Account Created 🚀");

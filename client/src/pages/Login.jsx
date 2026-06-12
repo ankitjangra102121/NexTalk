@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 
 import api from "../services/api";
 
+import { connectSocket } from "../socket/socket";
+
 function Login() {
   const navigate = useNavigate();
 
@@ -26,6 +28,7 @@ function Login() {
       const { data } = await api.post("/auth/login", formData);
 
       localStorage.setItem("token", data.accessToken);
+      connectSocket();
       localStorage.setItem("user", JSON.stringify(data.user));
 
       toast.success("Login Successful 🚀");

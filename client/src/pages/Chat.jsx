@@ -34,6 +34,8 @@ function Chat() {
 
   const [messages, setMessages] = useState([]);
 
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
   const [message, setMessage] = useState("");
 
   // Load conversations
@@ -88,9 +90,25 @@ function Chat() {
     fetchMessages();
   }, [selectedConversation, socket]);
 
+  // Online users
+  useEffect(() => {
+    const handleOnlineUsers = (users) => {
+      setOnlineUsers(users);
+    };
+
+    socket.on("online-users", handleOnlineUsers);
+
+    return () => {
+      socket.off("online-users", handleOnlineUsers);
+    };
+  }, [socket]);
+
   // Receive real-time messages
   useEffect(() => {
     const handleReceive = (newMessage) => {
+      if (newMessage.conversationId !== selectedConversation?.id) {
+        return;
+      }
       setMessages((prev) => [...prev, newMessage]);
     };
 
@@ -104,6 +122,9 @@ function Chat() {
   const openChat = async (targetUser) => {
     console.log("Clicked user:", targetUser);
     try {
+      if (selectedConversation) {
+        socket.emit("leave-conversation", selectedConversation.id);
+      }
       const data = await createPrivateConversation(targetUser.id);
 
       const conversation = data.conversation;
@@ -197,7 +218,9 @@ function Chat() {
                   {" "}
                   {targetUser.fullName?.charAt(0)}{" "}
                 </div>{" "}
-                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-slate-900"></div>{" "}
+                <div
+                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-slate-900 ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
+                />{" "}
               </div>{" "}
               {/* User Info */}{" "}
               <div className="flex-1 overflow-hidden">
@@ -226,7 +249,9 @@ function Chat() {
                   {selectedUser?.fullName?.charAt(0)}
                 </div>
 
-                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-slate-900"></div>
+                <div
+                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-slate-900 ${onlineUsers.includes(selectedUser?.id) ? "bg-green-500" : "bg-slate-500"}`}
+                />
               </div>
 
               <div>
