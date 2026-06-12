@@ -30,6 +30,8 @@ function Chat() {
 
   const [selectedConversation, setSelectedConversation] = useState(null);
 
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const [messages, setMessages] = useState([]);
 
   const [message, setMessage] = useState("");
@@ -108,6 +110,8 @@ function Chat() {
 
       setSelectedConversation(conversation);
 
+      setSelectedUser(targetUser);
+
       socket.emit("join-conversation", conversation.id);
 
       const result = await getMessages(conversation.id);
@@ -144,79 +148,209 @@ function Chat() {
   }
 
   return (
-    <div className="h-screen bg-slate-950 flex">
-      {/* Sidebar */}
-      <div className="w-[320px] bg-slate-900 border-r border-slate-800">
-        <div className="p-5 border-b border-slate-800">
-          <h1 className="text-white text-2xl font-bold">Chats</h1>
-        </div>
-
-        <div className="overflow-y-auto">
+    <div className="h-screen bg-slate-950 flex overflow-hidden">
+      {/* Sidebar */}{" "}
+      <div className="w-[360px] min-w-[320px] bg-slate-900 border-r border-slate-800 flex flex-col">
+        {" "}
+        {/* Top Header */}{" "}
+        <div className="p-5 border-b border-slate-800 bg-slate-950 sticky top-0 z-10">
+          {" "}
+          <div className="flex items-center justify-between">
+            {" "}
+            <div>
+              {" "}
+              <h1 className="text-2xl font-bold text-white"> Messages </h1>{" "}
+              <p className="text-slate-400 text-sm">
+                {" "}
+                Welcome, {user?.fullName}{" "}
+              </p>{" "}
+            </div>{" "}
+            <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+              {" "}
+              {user?.fullName?.charAt(0)}{" "}
+            </div>{" "}
+          </div>{" "}
+          {/* Search */}{" "}
+          <div className="mt-4">
+            {" "}
+            <input
+              type="text"
+              placeholder="Search users..."
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />{" "}
+          </div>{" "}
+        </div>{" "}
+        {/* User List */}{" "}
+        <div className="flex-1 overflow-y-auto">
+          {" "}
           {users.map((targetUser) => (
             <div
               key={targetUser.id}
               onClick={() => openChat(targetUser)}
-              className="p-4 border-b border-slate-800 hover:bg-slate-800 cursor-pointer"
+              className={`flex items-center gap-4 p-4 border-b border-slate-800 cursor-pointer transition-all duration-200 ${selectedConversation?.members?.some((member) => member.userId === targetUser.id) ? "bg-slate-800" : "hover:bg-slate-800/70 hover:scale-[1.01]"}`}
             >
-              <h2 className="text-white">{targetUser.fullName}</h2>
-
-              <p className="text-slate-400 text-sm">{targetUser.email}</p>
+              {" "}
+              {/* Avatar */}{" "}
+              <div className="relative">
+                {" "}
+                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                  {" "}
+                  {targetUser.fullName?.charAt(0)}{" "}
+                </div>{" "}
+                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-slate-900"></div>{" "}
+              </div>{" "}
+              {/* User Info */}{" "}
+              <div className="flex-1 overflow-hidden">
+                {" "}
+                <h2 className="text-white font-semibold truncate">
+                  {" "}
+                  {targetUser.fullName}{" "}
+                </h2>{" "}
+                <p className="text-slate-400 text-sm truncate">
+                  {" "}
+                  {targetUser.email}{" "}
+                </p>{" "}
+              </div>{" "}
             </div>
-          ))}
-        </div>
+          ))}{" "}
+        </div>{" "}
       </div>
-
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-slate-950 relative">
         {/* Header */}
-        <div className="bg-slate-900 p-5 border-b border-slate-800">
-          <h2 className="text-white text-xl">
-            {selectedConversation?.name || "Select Chat"}
-          </h2>
+        <div className=" bg-slate-900/90 backdrop-blur-md px-6 py-4 border-b border-slate-800 flex items-center justify-between sticky top-0 z-10 shadow-sm ">
+          {selectedUser ? (
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                  {selectedUser?.fullName?.charAt(0)}
+                </div>
+
+                <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-slate-900"></div>
+              </div>
+
+              <div>
+                <h2 className="text-white text-lg font-semibold">
+                  {selectedUser?.fullName}
+                </h2>
+
+                <p className="text-sm text-green-400">Online</p>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                Select a Chat
+              </h2>
+
+              <p className="text-slate-400 text-sm">
+                Choose someone to start messaging
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.senderId === user.id ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`px-5 py-3 rounded-2xl text-white max-w-sm ${
-                  msg.senderId === user.id ? "bg-blue-600" : "bg-slate-800"
-                }`}
-              >
-                {msg.content}
-              </div>
+        {!selectedConversation ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
+            <div className="h-32 w-32 rounded-full bg-slate-800 flex items-center justify-center text-6xl shadow-2xl mb-8">
+              💬
             </div>
-          ))}
-        </div>
 
+            <h1 className="text-4xl font-bold text-white">
+              Welcome to ChatApp
+            </h1>
+
+            <p className="text-slate-400 text-lg mt-4 max-w-lg leading-relaxed">
+              Select a user from the sidebar and start a real-time secure
+              conversation instantly.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-8 py-8 bg-slate-950 space-y-4">
+              {messages.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center">
+                  <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
+                    💬
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-white">
+                    No Messages Yet
+                  </h2>
+
+                  <p className="text-slate-400 mt-2 max-w-sm">
+                    Start chatting with your friends in real-time.
+                  </p>
+                </div>
+              )}
+
+              {messages.map((msg, index) => {
+                const isMine = msg.senderId === user.id;
+
+                return (
+                  <div
+                    key={index}
+                    className={`flex animate-fadeIn ${
+                      isMine ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[70%] px-5 py-3 rounded-3xl shadow-lg hover:scale-[1.01] transition-all duration-200 break-words ${
+                        isMine
+                          ? "bg-blue-600 text-white rounded-br-md"
+                          : "bg-slate-800 text-slate-100 rounded-bl-md"
+                      }`}
+                    >
+                      <p className="text-[15px] leading-relaxed">
+                        {msg.content}
+                      </p>
+
+                      <div className="flex justify-end mt-1">
+                        <span className="text-[11px] opacity-70">
+                          {new Date(msg.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
         {/* Input */}
-        <div className="p-5 border-t border-slate-800 flex gap-4 bg-slate-900">
-          <input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            type="text"
-            placeholder={
-              selectedConversation
-                ? "Type a message..."
-                : "Select a conversation first"
-            }
-            disabled={!selectedConversation}
-            className="flex-1 bg-slate-800 text-white px-4 py-3 rounded-xl outline-none"
-          />
+        <div className="bg-slate-900 border-t border-slate-800 px-6 py-4">
+          <div className="flex items-center gap-4 bg-slate-800 rounded-2xl p-2">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={
+                selectedConversation
+                  ? "Type a message..."
+                  : "Select a chat first"
+              }
+              disabled={!selectedConversation}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSend();
+                }
+              }}
+              className="flex-1 bg-transparent px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
+            />
 
-          <button
-            onClick={handleSend}
-            disabled={!selectedConversation}
-            className="bg-blue-600 hover:bg-blue-700 px-8 rounded-xl text-white disabled:opacity-50"
-          >
-            Send
-          </button>
+            <button
+              onClick={handleSend}
+              disabled={!selectedConversation}
+              className="bg-blue-600 hover:scale-105 active:scale-95 hover:bg-blue-700 transition px-6 py-3 rounded-xl text-white font-medium disabled:opacity-50"
+            >
+              ➤
+            </button>
+          </div>
         </div>
       </div>
     </div>
