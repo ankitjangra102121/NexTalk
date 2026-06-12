@@ -40,12 +40,16 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-emerald-50 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md rounded-[32px] border border-white/40 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)] p-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white">Welcome Back</h1>
+          <h1 className="text-4xl font-semibold text-slate-900 tracking-tight">
+            Welcome Back
+          </h1>
 
-          <p className="text-slate-400 mt-2">Login to your chat account</p>
+          <p className="text-slate-500 mt-3 text-sm">
+            Login to your chat account
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -54,7 +58,7 @@ function Login() {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
             required
           />
 
@@ -63,21 +67,24 @@ function Login() {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500"
+            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
             required
           />
 
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition duration-300 text-white py-3 rounded-xl font-semibold"
+            className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3.5 font-medium text-white transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.99]"
           >
             Login
           </button>
         </form>
 
-        <p className="text-center text-slate-400 mt-6">
+        <p className="text-center text-slate-500 mt-6">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-500 hover:text-blue-400">
+          <Link
+            to="/register"
+            className="text-indigo-600 hover:text-indigo-700 font-medium"
+          >
             Register
           </Link>
         </p>

@@ -185,244 +185,258 @@ function Chat() {
   }
 
   return (
-    <div className="h-screen bg-slate-950 flex overflow-hidden">
-      {/* Sidebar */}{" "}
-      <div className="w-[360px] min-w-[320px] bg-slate-900 border-r border-slate-800 flex flex-col">
-        {" "}
-        {/* Top Header */}{" "}
-        <div className="p-5 border-b border-slate-800 bg-slate-950 sticky top-0 z-10">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-emerald-50/40 text-slate-900">
+      <div className="flex h-full p-3 md:p-5 gap-4">
+        {/* Sidebar */}{" "}
+        <div className="flex md:flex w-full md:w-[360px] shrink-0 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl flex-col shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden">
           {" "}
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => {
-                localStorage.clear();
-
-                window.location.href = "/login";
-              }}
-              className="mt-4 w-full bg-red-600 hover:bg-red-700 transition py-2 rounded-xl text-white text-sm"
-            >
-              Logout
-            </button>{" "}
-            <div>
-              {" "}
-              <h1 className="text-2xl font-bold text-white"> Messages </h1>{" "}
-              <p className="text-slate-400 text-sm">
-                {" "}
-                Welcome, {user?.fullName}{" "}
-              </p>{" "}
-            </div>{" "}
-            <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
-              {" "}
-              {user?.fullName?.charAt(0)}{" "}
-            </div>{" "}
-          </div>{" "}
-          {/* Search */}{" "}
-          <div className="mt-4">
+          {/* Top Header */}{" "}
+          <div className="px-6 pt-6 pb-5 border-b border-slate-100 bg-white/70 backdrop-blur-xl sticky top-0 z-10">
             {" "}
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all duration-200"
-            />{" "}
-          </div>{" "}
-        </div>{" "}
-        {/* User List */}{" "}
-        <div className="flex-1 overflow-y-auto">
-          {loadingUsers ? (
-            <div className="p-6 text-slate-400 text-center">
-              {" "}
-              Loading users...{" "}
-            </div>
-          ) : (
-            users
-              .filter((u) =>
-                u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()),
-              )
-              .map((targetUser) => (
-                <div
-                  key={targetUser.id}
-                  onClick={() => openChat(targetUser)}
-                  className={`flex items-center gap-4 p-4 border-b border-slate-800 cursor-pointer transition-all duration-200 ${selectedConversation?.members?.some((member) => member.userId === targetUser.id) ? "bg-slate-800" : "hover:bg-slate-800/70 hover:scale-[1.01]"}`}
-                >
-                  {" "}
-                  {/* Avatar */}{" "}
-                  <div className="relative">
-                    {" "}
-                    <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
-                      {" "}
-                      {targetUser.fullName?.charAt(0)}{" "}
-                    </div>{" "}
-                    <div
-                      className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-slate-900 ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
-                    />{" "}
-                  </div>{" "}
-                  {/* User Info */}{" "}
-                  <div className="flex-1 overflow-hidden">
-                    {" "}
-                    <h2 className="text-white font-semibold truncate">
-                      {" "}
-                      {targetUser.fullName}{" "}
-                    </h2>{" "}
-                    <p className="text-slate-400 text-sm truncate">
-                      {" "}
-                      {targetUser.email}{" "}
-                    </p>{" "}
-                  </div>{" "}
-                </div>
-              ))
-          )}{" "}
-        </div>
-      </div>
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-slate-950 relative">
-        {/* Header */}
-        <div className=" bg-slate-900/90 backdrop-blur-md px-6 py-4 border-b border-slate-800 flex items-center justify-between sticky top-0 z-10 shadow-sm ">
-          {selectedUser ? (
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                  {selectedUser?.fullName?.charAt(0)}
-                </div>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => {
+                  localStorage.clear();
 
-                <div
-                  className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-slate-900 ${onlineUsers.includes(selectedUser?.id) ? "bg-green-500" : "bg-slate-500"}`}
-                />
-              </div>
-
+                  window.location.href = "/login";
+                }}
+                className="mt-4 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                Logout
+              </button>{" "}
               <div>
-                <h2 className="text-white text-lg font-semibold">
-                  {selectedUser?.fullName}
-                </h2>
-
-                <p
-                  className={`text-sm ${
-                    onlineUsers.includes(selectedUser?.id)
-                      ? "text-green-400"
-                      : "text-slate-400"
-                  }`}
-                >
-                  {onlineUsers.includes(selectedUser?.id)
-                    ? "Online"
-                    : "Offline"}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-xl font-semibold text-white">
-                Select a Chat
-              </h2>
-
-              <p className="text-slate-400 text-sm">
-                Choose someone to start messaging
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Messages */}
-        {!selectedConversation ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-8">
-            <div className="h-32 w-32 rounded-full bg-slate-800 flex items-center justify-center text-6xl shadow-2xl mb-8">
-              💬
-            </div>
-
-            <h1 className="text-4xl font-bold text-white">
-              Welcome to ChatApp
-            </h1>
-
-            <p className="text-slate-400 text-lg mt-4 max-w-lg leading-relaxed">
-              Select a user from the sidebar and start a real-time secure
-              conversation instantly.
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-8 py-8 bg-slate-950 space-y-4">
-              {messages.length === 0 && (
-                <div className="h-full flex flex-col items-center justify-center text-center">
-                  <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
-                    💬
-                  </div>
-
-                  <h2 className="text-2xl font-bold text-white">
-                    No Messages Yet
-                  </h2>
-
-                  <p className="text-slate-400 mt-2 max-w-sm">
-                    Start chatting with your friends in real-time.
-                  </p>
+                {" "}
+                <h1 className="text-[28px] font-semibold tracking-tight text-slate-900">
+                  {" "}
+                  Messages{" "}
+                </h1>{" "}
+                <p className="text-slate-500 text-sm mt-1">
+                  {" "}
+                  Welcome, {user?.fullName}{" "}
+                </p>{" "}
+              </div>{" "}
+              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
+                {" "}
+                {user?.fullName?.charAt(0)}{" "}
+              </div>{" "}
+            </div>{" "}
+            {/* Search */}{" "}
+            <div className="mt-4">
+              {" "}
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full rounded-2xl border border-slate-200/80 bg-slate-100/70 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+              />{" "}
+            </div>{" "}
+          </div>{" "}
+          {/* User List */}{" "}
+          <div className="flex-1 overflow-y-auto">
+            {loadingUsers ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="text-sm text-slate-400">
+                  Loading conversations...
                 </div>
-              )}
-
-              {messages.map((msg, index) => {
-                const isMine = msg.senderId === user.id;
-
-                return (
+              </div>
+            ) : (
+              users
+                .filter((u) =>
+                  u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()),
+                )
+                .map((targetUser) => (
                   <div
-                    key={msg.id || index}
-                    className={`flex animate-fadeIn ${
-                      isMine ? "justify-end" : "justify-start"
+                    key={targetUser.id}
+                    onClick={() => openChat(targetUser)}
+                    className={`mx-3 my-1.5 flex items-center gap-4 rounded-[24px] px-4 py-3 cursor-pointer transition-all duration-200 ${
+                      selectedConversation?.members?.some(
+                        (member) => member.userId === targetUser.id,
+                      )
+                        ? "bg-gradient-to-r from-indigo-50 to-violet-50 ring-1 ring-indigo-100 border border-indigo-100 shadow-sm"
+                        : "hover:bg-slate-100/80"
                     }`}
                   >
+                    {" "}
+                    {/* Avatar */}{" "}
+                    <div className="relative">
+                      {" "}
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-bold text-lg">
+                        {" "}
+                        {targetUser.fullName?.charAt(0)}{" "}
+                      </div>{" "}
+                      <div
+                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-slate-900 ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
+                      />{" "}
+                    </div>{" "}
+                    {/* User Info */}{" "}
+                    <div className="flex-1 overflow-hidden">
+                      {" "}
+                      <h2 className="text-white font-semibold truncate">
+                        {" "}
+                        {targetUser.fullName}{" "}
+                      </h2>{" "}
+                      <p className="text-slate-400 text-sm truncate">
+                        {" "}
+                        {targetUser.email}{" "}
+                      </p>{" "}
+                    </div>{" "}
+                  </div>
+                ))
+            )}{" "}
+          </div>
+        </div>
+        {/* Chat Area */}
+        <div className="flex-1 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col relative">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-slate-100 bg-white/70 backdrop-blur-xl px-6 py-5 sticky top-0 z-10">
+            {selectedUser ? (
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-semibold">
+                    {selectedUser?.fullName?.charAt(0)}
+                  </div>
+
+                  <div
+                    className={`absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-[3px] border-white ${
+                      onlineUsers.includes(selectedUser?.id)
+                        ? "bg-emerald-500"
+                        : "bg-slate-300"
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <h2 className="text-[17px] font-semibold tracking-tight text-slate-900">
+                    {selectedUser?.fullName}
+                  </h2>
+
+                  <p
+                    className={`text-xs font-medium ${
+                      onlineUsers.includes(selectedUser?.id)
+                        ? "text-emerald-500"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    {onlineUsers.includes(selectedUser?.id)
+                      ? "Online"
+                      : "Offline"}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-xl font-semibold text-white">
+                  Select a Chat
+                </h2>
+
+                <p className="text-slate-400 text-sm">
+                  Choose someone to start messaging
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Messages */}
+          {!selectedConversation ? (
+            <div className="flex-1 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col relative">
+              <div className="h-32 w-32 rounded-full bg-slate-800 flex items-center justify-center text-6xl shadow-2xl mb-8">
+                💬
+              </div>
+
+              <h1 className="text-4xl font-bold text-white">
+                Welcome to ChatApp
+              </h1>
+
+              <p className="text-slate-400 text-lg mt-4 max-w-lg leading-relaxed">
+                Select a user from the sidebar and start a real-time secure
+                conversation instantly.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto px-5 md:px-8 py-6 bg-gradient-to-b from-slate-50/60 to-white space-y-4">
+                {messages.length === 0 && (
+                  <div className="h-full flex flex-col items-center justify-center text-center">
+                    <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
+                      💬
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-white">
+                      No Messages Yet
+                    </h2>
+
+                    <p className="text-slate-400 mt-2 max-w-sm">
+                      Start chatting with your friends in real-time.
+                    </p>
+                  </div>
+                )}
+
+                {messages.map((msg, index) => {
+                  const isMine = msg.senderId === user.id;
+
+                  return (
                     <div
-                      className={`max-w-[70%] px-5 py-3 rounded-3xl shadow-lg hover:scale-[1.01] transition-all duration-200 break-words ${
-                        isMine
-                          ? "bg-blue-600 text-white rounded-br-md"
-                          : "bg-slate-800 text-slate-100 rounded-bl-md"
+                      key={msg.id || index}
+                      className={`flex animate-fadeIn ${
+                        isMine ? "justify-end" : "justify-start"
                       }`}
                     >
-                      <p className="text-[15px] leading-relaxed">
-                        {msg.content}
-                      </p>
+                      <div
+                        className={`max-w-[82%] md:max-w-[70%] rounded-[28px] px-5 py-3 shadow-sm transition-all duration-200 ${
+                          isMine
+                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-br-md"
+                            : "bg-white border border-slate-200 text-slate-800 rounded-bl-md"
+                        }`}
+                      >
+                        <p className="text-[15px] leading-7">{msg.content}</p>
 
-                      <div className="flex justify-end mt-1">
-                        <span className="text-[11px] opacity-70">
-                          {new Date(msg.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
+                        <div className="flex justify-end mt-1">
+                          <span className=" opacity-70 text-[10px] opacity-60 tracking-wide">
+                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-              <div ref={bottomRef} />
-            </div>
-          </>
-        )}
-        {/* Input */}
-        <div className="bg-slate-900 border-t border-slate-800 px-6 py-4">
-          <div className="flex items-center gap-4 bg-slate-800 rounded-2xl p-2">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={
-                selectedConversation
-                  ? "Type a message..."
-                  : "Select a chat first"
-              }
-              disabled={!selectedConversation}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSend();
+                  );
+                })}
+                <div ref={bottomRef} />
+              </div>
+            </>
+          )}
+          {/* Input */}
+          <div className="border-t border-slate-100 bg-white/70 backdrop-blur-xl px-5 py-5">
+            <div className="flex items-center gap-3 rounded-[28px] border border-slate-200 bg-slate-50 px-3 py-2">
+              <input
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={
+                  selectedConversation
+                    ? "Type a message..."
+                    : "Select a chat first"
                 }
-              }}
-              className="flex-1 bg-transparent px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
-            />
+                disabled={!selectedConversation}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSend();
+                  }
+                }}
+                className="flex-1 bg-transparent px-3 py-3 text-slate-900 placeholder:text-slate-400 outline-none"
+              />
 
-            <button
-              onClick={handleSend}
-              disabled={!selectedConversation}
-              className="bg-blue-600 hover:scale-105 active:scale-95 hover:bg-blue-700 transition px-6 py-3 rounded-xl text-white font-medium disabled:opacity-50"
-            >
-              ➤
-            </button>
+              <button
+                onClick={handleSend}
+                disabled={!selectedConversation}
+                className="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+              >
+                ➤
+              </button>
+            </div>
           </div>
         </div>
       </div>
