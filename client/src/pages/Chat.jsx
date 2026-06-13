@@ -33,7 +33,8 @@ function Chat() {
   const [message, setMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingUsers, setLoadingUsers] = useState(true);
-  // const [loadingMessages, setLoadingMessages] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [error, setError] = useState("");
   const bottomRef = useRef(null);
 
   // Load conversations
@@ -45,8 +46,8 @@ function Chat() {
         const data = await getUsers();
 
         setUsers(data.users);
-      } catch (error) {
-        setError("Failed to load users");
+      } catch {
+        setError("Unable to load users. Please refresh.");
       } finally {
         setLoadingUsers(false);
       }
@@ -80,11 +81,17 @@ function Chat() {
 
     const fetchMessages = async () => {
       try {
+        setLoadingMessages(true);
+
+        setError("");
+
         const data = await getMessages(selectedConversation.id);
 
         setMessages(data.messages || []);
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setError("Failed to load messages.");
+      } finally {
+        setLoadingMessages(false);
       }
     };
 
@@ -149,10 +156,19 @@ function Chat() {
 
       socket.emit("join-conversation", conversation.id);
 
-      setLoadingMessages(true);
-      const result = await getMessages(conversation.id);
-      setMessages(result.messages || []);
-      setLoadingMessages(false);
+      try {
+        setLoadingMessages(true);
+
+        setError("");
+
+        const result = await getMessages(conversation.id);
+
+        setMessages(result.messages || []);
+      } catch {
+        setError("Unable to load conversation.");
+      } finally {
+        setLoadingMessages(false);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -174,8 +190,8 @@ function Chat() {
       });
 
       setMessage("");
-    } catch (error) {
-      console.log(error);
+    } catch {
+      setError("Message failed to send.");
     }
   };
 
@@ -336,6 +352,12 @@ function Chat() {
             )}
           </div>
 
+          {error && (
+            <div className="mx-5 mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
           {/* Messages */}
           {!selectedConversation ? (
             <div className="flex-1 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col relative">
@@ -356,20 +378,30 @@ function Chat() {
             <>
               {/* Messages */}
               <div className="flex-1 overflow-y-auto px-5 md:px-8 py-6 bg-gradient-to-b from-slate-50/60 to-white space-y-4">
-                {messages.length === 0 && (
-                  <div className="h-full flex flex-col items-center justify-center text-center">
-                    <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
-                      💬
-                    </div>
-
-                    <h2 className="text-[17px] font-semibold tracking-tight text-slate-900">
-                      No Messages Yet
-                    </h2>
-
-                    <p className="text-slate-400 mt-2 max-w-sm">
-                      Start chatting with your friends in real-time.
-                    </p>
+                {loadingMessages ? (
+                  <div className="h-full flex items-center justify-center">
+                    {" "}
+                    <div className="text-slate-500 text-sm">
+                      {" "}
+                      Loading messages...{" "}
+                    </div>{" "}
                   </div>
+                ) : (
+                  messages.length === 0 && (
+                    <div className="h-full flex flex-col items-center justify-center text-center">
+                      <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
+                        💬
+                      </div>
+
+                      <h2 className="text-[17px] font-semibold tracking-tight text-slate-900">
+                        No Messages Yet
+                      </h2>
+
+                      <p className="text-slate-400 mt-2 max-w-sm">
+                        Start chatting with your friends in real-time.
+                      </p>
+                    </div>
+                  )
                 )}
 
                 {messages.map((msg, index) => {
