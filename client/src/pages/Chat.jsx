@@ -7,6 +7,7 @@ import {
   createPrivateConversation,
   getMessages,
 } from "../services/chat.service";
+import { clearAuthStorage } from "../services/authStorage";
 
 import { getUsers } from "../services/user.service";
 
@@ -211,7 +212,12 @@ function Chat() {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => {
-                  localStorage.clear();
+                  if (selectedConversation) {
+                    socket.emit("leave-conversation", selectedConversation.id);
+                  }
+                  socket.disconnect();
+
+                  clearAuthStorage();
 
                   window.location.href = "/login";
                 }}
