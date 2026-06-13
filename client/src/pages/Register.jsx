@@ -44,13 +44,13 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-emerald-50 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md rounded-[32px] border border-white/40 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)] p-8">
+      <div className="w-full max-w-md rounded-[36px] border border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-[0_24px_80px_rgba(15,23,42,0.08)] p-10">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-semibold text-slate-900 tracking-tight">
+          <h1 className="text-[40px] leading-tight font-semibold text-slate-900 tracking-tight">
             Create Account
           </h1>
 
-          <p className="text-slate-500 mt-3 text-sm">Join the real-time chat</p>
+          <p className="mt-3 text-[15px] text-slate-500 leading-6">Join the real-time chat</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -59,7 +59,7 @@ function Register() {
             name="fullName"
             placeholder="Full Name"
             onChange={handleChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 hover:border-slate-300"
             required
           />
 
@@ -68,7 +68,7 @@ function Register() {
             name="email"
             placeholder="Email"
             onChange={handleChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 hover:border-slate-300"
             required
           />
 
@@ -77,13 +77,13 @@ function Register() {
             name="password"
             placeholder="Password"
             onChange={handleChange}
-            className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100 hover:border-slate-300"
             required
           />
 
           <button
             type="submit"
-            className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 py-3.5 font-medium text-white transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.99]"
+            className="w-full rounded-2xl bg-slate-900 py-4 font-medium tracking-wide text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-[0.99]"
           >
             Create Account
           </button>

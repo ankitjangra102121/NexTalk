@@ -204,7 +204,7 @@ function Chat() {
     <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-emerald-50/40 text-slate-900">
       <div className="flex h-full p-3 md:p-5 gap-4">
         {/* Sidebar */}{" "}
-        <div className="flex md:flex w-full md:w-[360px] shrink-0 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl flex-col shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden">
+        <div className="w-full md:w-[340px] shrink-0 rounded-[32px] border border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
           {" "}
           {/* Top Header */}{" "}
           <div className="px-6 pt-6 pb-5 border-b border-slate-100 bg-white/70 backdrop-blur-xl sticky top-0 z-10">
@@ -275,7 +275,7 @@ function Chat() {
                         (member) => member.userId === targetUser.id,
                       )
                         ? "bg-gradient-to-r from-indigo-50 to-violet-50 ring-1 ring-indigo-100 border border-indigo-100 shadow-sm"
-                        : "hover:bg-slate-100/80"
+                        : "hover:bg-slate-100 hover:shadow-sm"
                     }`}
                   >
                     {" "}
@@ -310,7 +310,7 @@ function Chat() {
         {/* Chat Area */}
         <div className="flex-1 rounded-[32px] border border-white/50 bg-white/75 backdrop-blur-2xl shadow-[0_10px_40px_rgba(15,23,42,0.08)] overflow-hidden flex flex-col relative">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 bg-white/70 backdrop-blur-xl px-6 py-5 sticky top-0 z-10">
+          <div className="flex items-center justify-between border-b border-slate-200/70 bg-white/80 backdrop-blur-xl px-6 py-5">
             {selectedUser ? (
               <div className="flex items-center gap-4">
                 <div className="relative">
@@ -347,11 +347,11 @@ function Chat() {
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-[32px] font-semibold tracking-tight text-slate-900">
                   Select a Chat
                 </h2>
 
-                <p className="text-slate-500 text-sm">
+                <p className="text-slate-500 text-[15px] leading-7">
                   Choose someone to start messaging
                 </p>
               </div>
@@ -423,7 +423,7 @@ function Chat() {
                       <div
                         className={`max-w-[82%] md:max-w-[70%] rounded-[28px] px-5 py-3 shadow-sm transition-all duration-200 ${
                           isMine
-                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-br-md"
+                            ? "bg-gradient-to-r bg-slate-900 text-white text-white rounded-br-md"
                             : "bg-white border border-slate-200 text-slate-800 rounded-bl-md"
                         }`}
                       >

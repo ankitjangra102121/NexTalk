@@ -329,6 +329,8 @@ const deleteMessage = async (userId, messageId) => {
 };
 
 const searchConversations = async (userId, query) => {
+  const safeQuery = query.trim();
+
   return prisma.conversation.findMany({
     where: {
       members: {
@@ -340,11 +342,61 @@ const searchConversations = async (userId, query) => {
       OR: [
         {
           name: {
-            contains: query,
+            contains: safeQuery,
+
             mode: 'insensitive',
           },
         },
+
+        {
+          members: {
+            some: {
+              user: {
+                OR: [
+                  {
+                    fullName: {
+                      contains: safeQuery,
+
+                      mode: 'insensitive',
+                    },
+                  },
+
+                  {
+                    email: {
+                      contains: safeQuery,
+
+                      mode: 'insensitive',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
       ],
+    },
+
+    include: {
+      members: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              profilePic: true,
+            },
+          },
+        },
+      },
+
+      messages: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+
+        take: 1,
+      },
     },
   });
 };
