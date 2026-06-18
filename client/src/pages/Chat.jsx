@@ -48,6 +48,8 @@ function Chat() {
 
   const [error, setError] = useState("");
 
+  // const [showSidebar, setShowSidebar] = useState(true);
+
   const bottomRef = useRef(null);
   const isUserOnline = onlineUsers.includes(selectedUser?.id);
 
@@ -164,6 +166,10 @@ function Chat() {
 
       setSelectedConversation(conversation);
 
+      // if (window.innerWidth < 768) {
+      //   setShowSidebar(false);
+      // }
+
       setSelectedUser(targetUser);
 
       socket.emit("join-conversation", conversation.id);
@@ -204,31 +210,23 @@ function Chat() {
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-emerald-50/40 text-slate-900">
-      <div className="flex h-full p-3 gap-3">
+      <div className="flex h-full p-4 gap-4">
         {/* Sidebar */}
-        <div className="w-full md:w-[320px] shrink-0 rounded-[32px] border border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
+        <div className="w-full md:w-[300px] shrink-0 rounded-[28px] shadow-sm border border-slate-200 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
           {/* Top Header */}
           <div className="px-6 pt-6 pb-5 border-b border-slate-100 bg-white/70 backdrop-blur-xl sticky top-0 z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {user?.profilePic ? (
-                  <img
-                    src={user.profilePic}
-                    alt={user.fullName}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                    {user?.fullName?.charAt(0)?.toUpperCase()}
-                  </div>
-                )}
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                  {user?.fullName?.charAt(0)?.toUpperCase()}
+                </div>
 
                 <div>
-                  <h1 className="text-[24px] font-semibold tracking-tight text-slate-900">
+                  <h1 className="text-[22px] font-semibold tracking-tight text-slate-900">
                     NexTalk
                   </h1>
 
-                  <p className="text-slate-500 text-sm">{user?.fullName}</p>
+                  <p className="text-[13px] text-slate-500">{user?.fullName}</p>
                 </div>
               </div>
 
@@ -259,7 +257,7 @@ function Chat() {
             </div>
           </div>
           {/* User List */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
             {loadingUsers ? (
               <div className="flex items-center justify-center py-10">
                 <div className="text-sm text-slate-500">
@@ -280,7 +278,7 @@ function Chat() {
                         (member) => member.userId === targetUser.id,
                       )
                         ? "bg-indigo-50 border border-indigo-100 shadow-sm ring-1 ring-indigo-100 border border-indigo-100 shadow-sm"
-                        : "hover:bg-slate-100 hover:shadow-sm"
+                        : "hover:bg-slate-50 hover:shadow-sm"
                     }`}
                   >
                     {/* Avatar */}
@@ -289,7 +287,7 @@ function Chat() {
                         {targetUser.fullName?.charAt(0)}
                       </div>
                       <div
-                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
+                        className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white ring-2 ring-white ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
                       />
                     </div>
                     {/* User Info */}
@@ -313,7 +311,7 @@ function Chat() {
             {selectedUser ? (
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-semibold">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-semibold">
                     {selectedUser?.fullName?.charAt(0)}
                   </div>
 
@@ -340,7 +338,7 @@ function Chat() {
               </div>
             ) : (
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-[22px] font-semibold text-slate-900 tracking-tight">
                   NexTalk
                 </h2>
 
@@ -369,8 +367,7 @@ function Chat() {
               </h1>
 
               <p className="text-slate-500 text-lg mt-4 max-w-lg leading-relaxed">
-                Start a conversation, share ideas, and stay connected in real
-                time.
+                Select a conversation to start messaging.
               </p>
             </div>
           ) : (
@@ -413,7 +410,7 @@ function Chat() {
                         className={`max-w-[82%] md:max-w-[70%] rounded-[28px] px-5 py-3 shadow-sm transition-all duration-200 ${
                           isMine
                             ? "bg-gradient-to-r bg-slate-900 text-white text-white rounded-br-md"
-                            : "bg-white border border-slate-200 text-slate-800 rounded-bl-md"
+                            : "bg-white border border-slate-200 text-slate-900 rounded-bl-md"
                         }`}
                       >
                         <p className="text-[15px] leading-7">{msg.content}</p>
@@ -452,13 +449,13 @@ function Chat() {
                     handleSend();
                   }
                 }}
-                className="flex-1 bg-transparent px-3 py-3 text-slate-900 placeholder:text-slate-400 outline-none"
+                className="rounded-2xl border border-slate-200px-4 py-3 focus:ring-4 focus:ring-indigo-100"
               />
 
               <button
                 onClick={handleSend}
                 disabled={!selectedConversation}
-                className="h-12 w-12 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+                className="rounded-2xl bg-slate-900 px-5 py-3 text-white hover:bg-slate-800 transition"
               >
                 ➤
               </button>
