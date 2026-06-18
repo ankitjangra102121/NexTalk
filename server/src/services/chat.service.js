@@ -156,6 +156,24 @@ const getUserConversations = async (userId) => {
 
         take: 1,
       },
+
+      _count: {
+        select: {
+          messages: {
+            where: {
+              readBy: {
+                none: {
+                  userId,
+                },
+              },
+
+              senderId: {
+                not: userId,
+              },
+            },
+          },
+        },
+      },
     },
 
     orderBy: {

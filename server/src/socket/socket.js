@@ -169,6 +169,10 @@ const initializeSocket = (io) => {
         });
 
         io.to(conversationId).emit('receive-message', message);
+        socket.to(conversationId).emit('conversation-unread', {
+          conversationId,
+          messageId: message.id,
+        });
       } catch (error) {
         socket.emit('message-error', error.message);
       }
@@ -190,6 +194,24 @@ const initializeSocket = (io) => {
       socket.to(conversationId).emit('user-typing', {
         userId: socket.userId,
       });
+    });
+
+    socket.on('message-read', async ({ messageId }) => {
+      try {
+        const result = await chatService.markMessageRead(
+          socket.userId,
+          messageId,
+        );
+
+        io.emit('message-read-update', {
+          messageId,
+          userId: socket.userId,
+
+          readAt: result.readAt,
+        });
+      } catch {
+        socket.emit('message-error', 'Failed to mark message read');
+      }
     });
 
     socket.on('stop-typing', async ({ conversationId }) => {

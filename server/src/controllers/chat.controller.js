@@ -1,3 +1,5 @@
+const prisma = require('../config/db');
+
 const chatService = require('../services/chat.service');
 
 const createConversation = async (req, res) => {
@@ -271,6 +273,42 @@ const markNotificationRead = async (req, res) => {
   });
 };
 
+const reactToMessage = async (req, res) => {
+  try {
+    const result = await prisma.messageReaction.upsert({
+      where: {
+        userId_messageId_emoji: {
+          userId: req.user.id,
+
+          messageId: req.body.messageId,
+
+          emoji: req.body.emoji,
+        },
+      },
+
+      update: {},
+
+      create: {
+        userId: req.user.id,
+
+        messageId: req.body.messageId,
+
+        emoji: req.body.emoji,
+      },
+    });
+
+    return res.json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createConversation,
   getConversations,
@@ -287,4 +325,5 @@ module.exports = {
   getNotifications,
   markNotificationRead,
   createOrGetConversation,
+  reactToMessage,
 };

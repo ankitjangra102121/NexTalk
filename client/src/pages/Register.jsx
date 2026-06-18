@@ -47,10 +47,12 @@ function Register() {
       <div className="w-full max-w-md rounded-[36px] border border-slate-200/70 bg-white/85 backdrop-blur-xl shadow-[0_24px_80px_rgba(15,23,42,0.08)] p-10">
         <div className="text-center mb-8">
           <h1 className="text-[40px] leading-tight font-semibold text-slate-900 tracking-tight">
-            Create Account
+            NexTalk
           </h1>
 
-          <p className="mt-3 text-[15px] text-slate-500 leading-6">Join the real-time chat</p>
+          <p className="mt-3 text-[15px] text-slate-500 leading-6">
+            Real-Time Communication Platform
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

@@ -28,6 +28,8 @@ router.get(
 
 router.post('/read', authMiddleware, chatController.markRead);
 
+router.post('/reaction', authMiddleware, chatController.reactToMessage);
+
 router.delete(
   '/message/:messageId',
   authMiddleware,

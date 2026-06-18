@@ -21,14 +21,15 @@ enum MessageType {
 }
 
 model User {
-  id         String  @id @default(uuid())
-  fullName   String
-  email      String  @unique
-  password   String
-  profilePic String?
-  bio        String?
-  role       String  @default("user")
-  isVerified Boolean @default(false)
+  id            String  @id @default(uuid())
+  fullName      String
+  email         String  @unique
+  password      String
+  profilePic    String?
+  bio           String?
+  statusMessage String?
+  role          String  @default("user")
+  isVerified    Boolean @default(false)
 
   refreshTokens RefreshToken[]
 
@@ -40,9 +41,10 @@ model User {
 
   presence UserPresence?
 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  messageReads MessageRead[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  messageReads     MessageRead[]
+  messageReactions MessageReaction[]
 }
 
 model RefreshToken {
@@ -114,7 +116,10 @@ model Message {
 
   readBy MessageRead[]
 
+  reactions MessageReaction[]
+
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 }
 
@@ -176,4 +181,21 @@ model UserPresence {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   updatedAt DateTime @updatedAt
+}
+
+model MessageReaction {
+  id String @id @default(uuid())
+
+  emoji String
+
+  userId    String
+  messageId String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, messageId, emoji])
 }

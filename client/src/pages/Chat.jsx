@@ -204,58 +204,61 @@ function Chat() {
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-indigo-50/40 to-emerald-50/40 text-slate-900">
-      <div className="flex h-full p-3 md:p-5 gap-4">
-        {/* Sidebar */}{" "}
-        <div className="w-full md:w-[340px] shrink-0 rounded-[32px] border border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
-          {" "}
-          {/* Top Header */}{" "}
+      <div className="flex h-full p-3 gap-3">
+        {/* Sidebar */}
+        <div className="w-full md:w-[320px] shrink-0 rounded-[32px] border border-slate-200/70 bg-white/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.06)] overflow-hidden">
+          {/* Top Header */}
           <div className="px-6 pt-6 pb-5 border-b border-slate-100 bg-white/70 backdrop-blur-xl sticky top-0 z-10">
-            {" "}
             <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {user?.profilePic ? (
+                  <img
+                    src={user.profilePic}
+                    alt={user.fullName}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                    {user?.fullName?.charAt(0)?.toUpperCase()}
+                  </div>
+                )}
+
+                <div>
+                  <h1 className="text-[24px] font-semibold tracking-tight text-slate-900">
+                    NexTalk
+                  </h1>
+
+                  <p className="text-slate-500 text-sm">{user?.fullName}</p>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   if (selectedConversation) {
                     socket.emit("leave-conversation", selectedConversation.id);
                   }
+
                   socket.disconnect();
-
                   clearAuthStorage();
-
                   window.location.href = "/login";
                 }}
-                className="mt-4 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition"
               >
                 Logout
-              </button>{" "}
-              <div>
-                {" "}
-                <h1 className="text-[28px] font-semibold tracking-tight text-slate-900">
-                  {" "}
-                  Messages{" "}
-                </h1>{" "}
-                <p className="text-slate-500 text-sm mt-1">
-                  {" "}
-                  Welcome, {user?.fullName}{" "}
-                </p>{" "}
-              </div>{" "}
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                {" "}
-                {user?.fullName?.charAt(0)}{" "}
-              </div>{" "}
-            </div>{" "}
-            {/* Search */}{" "}
+              </button>
+            </div>
+            {/* Search */}
             <div className="mt-4">
-              {" "}
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder="Search conversations..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200/80 bg-slate-100/70 px-4 py-3 text-slate-900 placeholder:text-slate-400 transition-all outline-none focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-              />{" "}
-            </div>{" "}
-          </div>{" "}
-          {/* User List */}{" "}
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-all focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
+              />
+            </div>
+          </div>
+          {/* User List */}
           <div className="flex-1 overflow-y-auto">
             {loadingUsers ? (
               <div className="flex items-center justify-center py-10">
@@ -272,41 +275,35 @@ function Chat() {
                   <div
                     key={targetUser.id}
                     onClick={() => openChat(targetUser)}
-                    className={`mx-3 my-1.5 flex items-center gap-4 rounded-[24px] px-4 py-3 cursor-pointer transition-all duration-200 ${
+                    className={`mx-3 my-1.5 flex items-center gap-3 rounded-[24px] px-3 py-3 cursor-pointer transition-all duration-200 ${
                       selectedConversation?.members?.some(
                         (member) => member.userId === targetUser.id,
                       )
-                        ? "bg-gradient-to-r from-indigo-50 to-violet-50 ring-1 ring-indigo-100 border border-indigo-100 shadow-sm"
+                        ? "bg-indigo-50 border border-indigo-100 shadow-sm ring-1 ring-indigo-100 border border-indigo-100 shadow-sm"
                         : "hover:bg-slate-100 hover:shadow-sm"
                     }`}
                   >
-                    {" "}
-                    {/* Avatar */}{" "}
+                    {/* Avatar */}
                     <div className="relative">
-                      {" "}
-                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-fuchsia-500 via-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-bold text-lg">
-                        {" "}
-                        {targetUser.fullName?.charAt(0)}{" "}
-                      </div>{" "}
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md flex items-center justify-center text-white font-bold text-lg">
+                        {targetUser.fullName?.charAt(0)}
+                      </div>
                       <div
                         className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${onlineUsers.includes(targetUser.id) ? "bg-green-500" : "bg-slate-500"}`}
-                      />{" "}
-                    </div>{" "}
-                    {/* User Info */}{" "}
+                      />
+                    </div>
+                    {/* User Info */}
                     <div className="flex-1 overflow-hidden">
-                      {" "}
                       <h2 className="font-semibold text-[15px] text-slate-900 truncate">
-                        {" "}
-                        {targetUser.fullName}{" "}
-                      </h2>{" "}
+                        {targetUser.fullName}
+                      </h2>
                       <p className="text-slate-500 text-sm truncate">
-                        {" "}
-                        {targetUser.email}{" "}
-                      </p>{" "}
-                    </div>{" "}
+                        {targetUser.email}
+                      </p>
+                    </div>
                   </div>
                 ))
-            )}{" "}
+            )}
           </div>
         </div>
         {/* Chat Area */}
@@ -343,19 +340,19 @@ function Chat() {
               </div>
             ) : (
               <div>
-                <h2 className="text-[32px] font-semibold tracking-tight text-slate-900">
-                  Select a Chat
+                <h2 className="text-lg font-semibold text-slate-900">
+                  NexTalk
                 </h2>
 
-                <p className="text-slate-500 text-[15px] leading-7">
-                  Choose someone to start messaging
+                <p className="text-sm text-slate-500">
+                  Real-Time Communication Platform
                 </p>
               </div>
             )}
           </div>
 
           {error && (
-            <div className="mx-5 mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <div className="mx-5 mt-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-3 text-sm text-red-600">
               {error}
             </div>
           )}
@@ -368,12 +365,12 @@ function Chat() {
               </div>
 
               <h1 className="text-4xl font-semibold tracking-tight text-slate-900">
-                Welcome to ChatApp
+                Welcome to NexTalk
               </h1>
 
               <p className="text-slate-500 text-lg mt-4 max-w-lg leading-relaxed">
-                Select a user from the sidebar and start a real-time secure
-                conversation instantly.
+                Start a conversation, share ideas, and stay connected in real
+                time.
               </p>
             </div>
           ) : (
@@ -382,11 +379,9 @@ function Chat() {
               <div className="flex-1 overflow-y-auto px-5 md:px-8 py-6 bg-gradient-to-b from-slate-50/60 to-white space-y-4">
                 {loadingMessages ? (
                   <div className="h-full flex items-center justify-center">
-                    {" "}
                     <div className="text-slate-500 text-sm">
-                      {" "}
-                      Loading messages...{" "}
-                    </div>{" "}
+                      Loading messages...
+                    </div>
                   </div>
                 ) : (
                   messages.length === 0 && (
@@ -394,11 +389,9 @@ function Chat() {
                       <div className="h-28 w-28 rounded-full bg-slate-800 flex items-center justify-center text-5xl mb-6 shadow-xl">
                         💬
                       </div>
-
                       <h2 className="text-[17px] font-semibold tracking-tight text-slate-900">
                         No Messages Yet
                       </h2>
-
                       <p className="text-slate-400 mt-2 max-w-sm">
                         Start chatting with your friends in real-time.
                       </p>
